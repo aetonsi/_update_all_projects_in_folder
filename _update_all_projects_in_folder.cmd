@@ -1,1 +1,1 @@
-@powershell -file "%~dp0.\%~n0.ps1"
+@pwsh -file "%~dp0.\%~n0.ps1" %*
