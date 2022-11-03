@@ -42,3 +42,5 @@ Get-ChildItem $dir -Directory | ForEach-Object {
     Pop-Location
 }
 
+
+Read-Host "Press any key to continue"
