@@ -1,6 +1,11 @@
-function confirmAll() {
-    $title = ""
-    $question = "Do you want run all commands without confirmation?"
+Param(
+    [Parameter(Mandatory = $false)] [string] $dir = $(resolve-path "$PSScriptRoot\..")
+)
+
+
+function confirmAll([string] $dir) {
+    $title = "Updating every project in folder $dir"
+    $question = "Do you want run all update commands without confirmation?"
     $choices = '&Yes', '&No'
 
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
@@ -8,16 +13,16 @@ function confirmAll() {
 }
 function confirm([string] $dir, [string] $command) {
     $title = $dir
-    $question = "Do you want to run: $command"
+    $question = "Running: $command"
     $choices = '&Yes', '&No'
 
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 0)
     return $decision -eq 0
 }
 
+Write-Host "Projects folder = $dir"
+$globalConfirmation = confirmAll $dir
 
-$dir = "$PSScriptRoot\.."
-$globalConfirmation = confirmAll
 Get-ChildItem $dir -Directory | ForEach-Object {
     Push-Location $_.FullName
     Write-Output "================== Dir: $_"
@@ -43,4 +48,4 @@ Get-ChildItem $dir -Directory | ForEach-Object {
 }
 
 
-Read-Host "Press any key to continue"
+Read-Host "Completed. Press any key to continue"
