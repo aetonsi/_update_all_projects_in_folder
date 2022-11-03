@@ -1,0 +1,1 @@
+pwsh ./_update_all_projects_in_folder.ps1 $@

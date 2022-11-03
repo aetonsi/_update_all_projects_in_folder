@@ -1,3 +1,5 @@
+#!/usr/bin/env pwsh
+
 Param(
     [Parameter(Mandatory = $false)] [string] $dir = $(resolve-path "$PSScriptRoot\..")
 )
