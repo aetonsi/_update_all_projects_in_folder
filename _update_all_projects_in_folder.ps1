@@ -4,12 +4,12 @@ Param(
     [Parameter(Mandatory = $false)] [string] $dir = $null
 )
 
-Import-Module "$PSScriptRoot\pwsh__Io\Io.psm1" -force
+Import-Module -Scope Local "$PSScriptRoot\pwsh__Io\Io.psm1" -Force
 
 
 function confirmAll([string] $dir) {
     $title = "Updating every project in folder $dir"
-    $question = "Do you want run all update commands without confirmation?"
+    $question = 'Do you want run all update commands without confirmation?'
     $choices = '&Yes', '&No'
 
     $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
@@ -32,27 +32,29 @@ $globalConfirmation = confirmAll $dir
 
 Get-ChildItem $dir -Directory | ForEach-Object {
     Push-Location $_.FullName
-    Write-Output "================== Dir: $_"
+    Write-Warning "================== Dir: $_"
     if (Test-Path '.svn') {
-        if ($globalConfirmation -or (confirm $_.Name "svn update")) {
-            Write-Warning "RUNNING svn update"
-            & svn update
+        if ($globalConfirmation -or (confirm $_.Name 'svn update')) {
+            Write-Warning 'RUNNING svn update'
+            & svn update --verbose
         }
     }
     if (Test-Path '.git') {
-        if ($globalConfirmation -or (confirm $_.Name "git pull")) {
-            Write-Warning "RUNNING git pull"
-            & git pull
+        if ($globalConfirmation -or (confirm $_.Name 'git pull')) {
+            $gitargs = 'pull --progress --verbose' -split ' '
+            Write-Output "RUNNING git $gitargs"
+            & git @gitargs
         }
     }
     if (Test-Path '.gitmodules') {
-        if ($globalConfirmation -or (confirm $_.Name "git submodule update --recursive --remote")) {
-            Write-Warning "RUNNING git submodule update --recursive --remote"
-            & git submodule update --recursive --remote
+        if ($globalConfirmation -or (confirm $_.Name 'git submodule update --recursive --remote')) {
+            $gitargs = 'submodule update --progress --init --recursive --verbose' -split ' '
+            Write-Output "RUNNING git $gitargs"
+            & git @gitargs
         }
     }
     Pop-Location
 }
 
 
-Read-Host "Completed. Press any key to continue"
+Read-Host 'Completed. Press any key to continue'
